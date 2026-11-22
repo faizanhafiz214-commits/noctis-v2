@@ -27,3 +27,9 @@ The public backend is not production-hardened: there is no email verification, M
 ## Build
 
 Run `npm ci`, then open `android/` in Android Studio with JDK 17 and Android SDK 35, or run `cd android && ./gradlew assembleDebug`. The web assets and Gradle wrapper binary are reconstructed by the npm postinstall step. Debug signing is for testing only. `PGLITE_TEST=1 npm test` exercises the PostgreSQL-compatible query path. Use only on devices whose owners consent.
+
+## v4 preview notes
+- Dashboard groups Radar, Telemetry, Controls and Settings; Android system-bar insets are applied by the native shell. Real-device notch/navigation checks are still required.
+- Target Android shares network type, Wi-Fi SSID (when the OS permits location-sensitive access), Wi-Fi signal and battery only after tapping the telemetry enable button. Cellular generation and cellular signal are not reported. Network metadata is held in the active WebSocket only and disappears when disconnected; it is sent to the server and paired account, not end-to-end encrypted.
+- App-data wipe requires the controller Android app's local PIN, confirmation slider and account password. The PIN/slider are enforced by the controller UI, not the server, and are not a replacement for server-side MFA. Wipe is best effort while the companion is connected and clears NOCTIS WebView data/cache; it keeps the target's native privacy PIN. There is no delivery or erasure confirmation. Android system factory reset / device-admin reset is **not implemented**. The warning screen does not lock Android.
+- This is a debug-signed preview, not a production release. Android notification, native telemetry, wipe, insets and icon behavior have not been verified on physical hardware. Background delivery is not guaranteed. Four-digit PIN is not biometric and has limited entropy. Do not rely on this preview to protect or recover important devices.
