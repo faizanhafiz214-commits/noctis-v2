@@ -1,6 +1,6 @@
 {
   "name": "noctis-device-dashboard",
-  "version": "2.0.0-preview",
+  "version": "3.0.0-preview",
   "private": true,
   "description": "Consent-based device recovery dashboard",
   "scripts": {
@@ -12,7 +12,7 @@
     "node": ">=22.13.0"
   },
   "dependencies": {
-    "maplibre-gl": "^5.24.1",
+    "maplibre-gl": "^6.19.0",
     "pg": "^8.23.1",
     "qrcode": "^1.5.4",
     "ws": "^8.18.0"
