@@ -1,0 +1,1 @@
+{"name":"NOCTIS Device Companion","short_name":"NOCTIS","description":"Consent-based device recovery companion","start_url":"/device","display":"standalone","background_color":"#080c0c","theme_color":"#080c0c","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
