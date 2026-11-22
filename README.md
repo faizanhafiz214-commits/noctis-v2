@@ -2,7 +2,7 @@
 
 **System Developed by Hafiz Faizan Murtaza**
 
-This package contains a Node/SQLite server, mobile-first web interface, and a native Android WebView shell. The APK is a **debug-signed preview**; it is not security-audited, production-signed, deployed or tested on a physical phone. It is not an OS-level Find My Device replacement. Use only for devices whose owners have consented. Node 22.13+ is required.
+This package contains a Node/PostgreSQL server (or SQLite for local tests), mobile-first web interface, and a native Android WebView shell. The APK is a **debug-signed preview**; it is not security-audited, production-signed, deployed or tested on a physical phone. It is not an OS-level Find My Device replacement. Use only for devices whose owners have consented. Node 22.13+ is required.
 
 ## What changed
 
@@ -13,7 +13,7 @@ This package contains a Node/SQLite server, mobile-first web interface, and a na
 
 ## Install and connect the preview APK
 
-Install the separately supplied `NOCTIS-v2-preview-debug.apk` on Android 8.0+ after allowing installation from the chosen source. Android may warn that a debug-signed APK is not a production release. Open it and choose **SERVER**. Enter the origin of your own trusted, reachable HTTPS NOCTIS v2 server (for example `https://your-domain.example`, without a path), then choose Connect. No server URL is preconfigured: a backend has not been deployed by this package. The app downloads and executes the interface from the configured server; never point it at an untrusted server. Enable the optional maximum media-volume setting only after considering the loudness risk.
+Install the separately supplied `NOCTIS-v2-preview-debug.apk` on Android 8.0+ after allowing installation from the chosen source. Android may warn that a debug-signed APK is not a production release. Open it and choose **SERVER**. Enter the origin of your own trusted, reachable HTTPS NOCTIS v2 server (for example `https://your-domain.example`, without a path), then choose Connect. No server URL is preconfigured in the preview: a backend has not yet been deployed. The app downloads and executes the interface from the configured server; never point it at an untrusted server. Enable the optional maximum media-volume setting only after considering the loudness risk.
 
 The controller interface is `/`, target is `/device`. Use the mode link in the web interface to switch. Create an account, generate a six-digit code, enter it in target mode on another device, and explicitly enable location and audio on that target. Keep the target app in the foreground. The QR code opens the companion page; it does not contain the pairing code or scan with the camera.
 
@@ -44,4 +44,8 @@ Run `npm test` for server integration tests. Tests use temporary data. Browser t
 
 MapLibre GL JS is distributed under BSD-3-Clause; its license is available in `node_modules/maplibre-gl/LICENSE.txt` after installation. The supplied web bundle uses OpenFreeMap's style and tiles, with OpenStreetMap and OpenMapTiles attribution shown in the map. Review provider terms and usage policies before production use.
 
-The Git repository stores the Gradle wrapper as base64 text and restores its jar on `npm install`; the same install step generates the MapLibre web assets from the pinned dependency. The GitHub copy is still the SQLite **preview**, not a Render-ready persistent backend. Do not deploy it as-is to a free web service: account and pairing data would be lost on spin-down.
+The Git repository stores the Gradle wrapper as base64 text and restores its jar on `npm install`; the same install step generates the MapLibre web assets from the pinned dependency. The GitHub copy now supports PostgreSQL when DATABASE_URL is provided; Render startup refuses to use ephemeral SQLite. Local tests can also use SQLite, while `PGLITE_TEST=1 npm test` checks the PostgreSQL-compatible query path using PGlite. A real Render PostgreSQL deployment has not yet been tested.
+
+## Render test deployment
+
+Set `DATABASE_URL` to a PostgreSQL connection, `JWT_SECRET` to a cryptographically random secret, `HOST=0.0.0.0`, and Node 24; Render supplies `RENDER_EXTERNAL_URL` for the public origin. Free Postgres expires after 30 days and has no backups; free web services spin down on inactivity. Do not use the preview as a production theft-recovery system.
