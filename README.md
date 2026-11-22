@@ -2,7 +2,7 @@
 
 **System Developed by Hafiz Faizan Murtaza**
 
-This package contains a Node/PostgreSQL server (or SQLite for local tests), mobile-first web interface, and a native Android WebView shell. The APK is a **debug-signed preview**; it is not security-audited, production-signed, deployed or tested on a physical phone. It is not an OS-level Find My Device replacement. Use only for devices whose owners have consented. Node 22.13+ is required.
+This package contains a Node/PostgreSQL server (or SQLite for local tests), mobile-first web interface, and a native Android WebView shell. The APK is a **debug-signed preview**; it is not security-audited, production-signed, security-audited or tested on a physical phone. It is not an OS-level Find My Device replacement. Use only for devices whose owners have consented. Node 22.13+ is required.
 
 ## What changed
 
@@ -13,7 +13,7 @@ This package contains a Node/PostgreSQL server (or SQLite for local tests), mobi
 
 ## Install and connect the preview APK
 
-Install the separately supplied `NOCTIS-v2-preview-debug.apk` on Android 8.0+ after allowing installation from the chosen source. Android may warn that a debug-signed APK is not a production release. Open it and choose **SERVER**. Enter the origin of your own trusted, reachable HTTPS NOCTIS v2 server (for example `https://your-domain.example`, without a path), then choose Connect. No server URL is preconfigured in the preview: a backend has not yet been deployed. The app downloads and executes the interface from the configured server; never point it at an untrusted server. Enable the optional maximum media-volume setting only after considering the loudness risk.
+Install the separately supplied `NOCTIS-v2-preview-debug.apk` on Android 8.0+ after allowing installation from the chosen source. Android may warn that a debug-signed APK is not a production release. The Bonto test backend `https://noctis-faizan-v2.bonto.page` is preconfigured on first launch. To use another trusted HTTPS NOCTIS server, choose **SERVER**, enter its origin without a path, and choose Connect. The app downloads and executes the interface from the configured server; never point it at an untrusted server. Enable the optional maximum media-volume setting only after considering the loudness risk.
 
 The controller interface is `/`, target is `/device`. Use the mode link in the web interface to switch. Create an account, generate a six-digit code, enter it in target mode on another device, and explicitly enable location and audio on that target. Keep the target app in the foreground. The QR code opens the companion page; it does not contain the pairing code or scan with the camera.
 
@@ -33,7 +33,7 @@ Run `npm test` for server integration tests. Tests use temporary data. Browser t
 
 ## Important limitations and security
 
-- The APK is a thin **WebView shell**, not a standalone backend. A live, secure server is still required; no cloud deployment or public URL is included. The target must remain open and connected: there is no push service or reliable background tracking, alarm, GPS or command queue.
+- The APK is a thin **WebView shell**, not a standalone backend. The default Bonto endpoint is a free test server, not a production deployment. It can sleep or exhaust its monthly usage allowance. The target must remain open and connected: there is no push service or reliable background tracking, alarm, GPS or command queue.
 - Android/browser APIs do not guarantee sound during silent mode, Do Not Disturb, backgrounding or screen lock. Maximum volume is optional and applies only to the media stream; it can be limited by the OS, device or audio route. No guarantee of reaching a particular loudness. The red flashing UI could affect photosensitive users; it is slow and respects reduced-motion, but use cautiously.
 - Messages are displayed inside the app, not on the OS lock screen. Simulated wipe only removes this app's local pairing data and revokes the server pairing; it does not wipe the phone, photos, or other apps. It requires the target to be online. The server revokes upon command dispatch, and does not confirm execution.
 - The backend uses scrypt password hashes, JWT expiry/signature checks, per-device random tokens stored hashed, ownership checks, one-use expiring codes and basic in-memory IP throttling. Six-digit codes have limited entropy and the in-memory per-IP limiter is **not sufficient for a public production service**; distributed abuse protection and hardened pairing are required. Email is not verified; there is no MFA, account recovery, strong session revocation or audit log. Tokens in web storage can be exposed by XSS. The native WebView exposes an opt-in audio-volume bridge to the configured server's pages, another reason to trust and secure the server.
@@ -53,3 +53,7 @@ Set `DATABASE_URL` to a PostgreSQL connection, `JWT_SECRET` to a cryptographical
 ## Ephemeral Render test (explicit opt-in)
 
 For the explicitly requested free, non-production Render test, set `ALLOW_EPHEMERAL_SQLITE=true` and omit `DATABASE_URL`. **All accounts, pairings and last-known locations are lost on every spin-down, restart or deploy.** Free Render web services may spin down after 15 minutes of inactivity. Do not rely on this for actual lost-device recovery. A persistent PostgreSQL service is needed for durable storage, along with the security and availability work described above.
+
+## Bonto test deployment
+
+The test backend is hosted at https://noctis-faizan-v2.bonto.page with `HOST=0.0.0.0`, `BASE_URL` matching the HTTPS origin, a random `JWT_SECRET`, and `ALLOW_EPHEMERAL_SQLITE=true`. The app uses SQLite and is not suitable for sensitive or production recovery use. Bonto free tier has a 75-runtime-hour monthly cap and may sleep; storage durability is not independently guaranteed. No production signing or physical Android testing is included.

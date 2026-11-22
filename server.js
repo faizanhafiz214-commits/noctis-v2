@@ -17,9 +17,9 @@ if (base.protocol !== 'https:' && !['localhost','127.0.0.1','::1'].includes(base
 const SECRET = process.env.JWT_SECRET;
 if (!SECRET || Buffer.byteLength(SECRET) < 32) throw Error('Set JWT_SECRET to a random secret of at least 32 bytes');
 // DATABASE_URL selects PostgreSQL; SQLite is retained only for local testing.
-const ephemeral=!!(process.env.RENDER&&!process.env.DATABASE_URL);
+const ephemeral=!!(!process.env.DATABASE_URL && (process.env.RENDER || process.env.ALLOW_EPHEMERAL_SQLITE==='true')); 
 if(ephemeral&&process.env.ALLOW_EPHEMERAL_SQLITE!=='true') throw Error('DATABASE_URL is required unless ALLOW_EPHEMERAL_SQLITE=true is explicitly set');
-if(ephemeral)console.warn('TEST ONLY: Render ephemeral SQLite is erased on restart, spin-down, or redeploy.');
+if(ephemeral)console.warn('TEST ONLY: SQLite storage may be lost on restart, spin-down, or redeploy.');
 if(process.env.NODE_ENV==='production'&&process.env.PGLITE_TEST==='1') throw Error('PGLITE_TEST is for local testing only');
 const pgMode=!!process.env.DATABASE_URL||process.env.PGLITE_TEST==='1';
 let db;
