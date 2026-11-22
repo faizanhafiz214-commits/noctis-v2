@@ -19,3 +19,5 @@ $('#commandForm').onsubmit=async e=>{e.preventDefault();const data={action};if(a
 if(token)start();
 
 setTimeout(()=>document.querySelector('#splash')?.remove(),1800);
+
+fetch('/api/config').then(r=>r.ok?r.json():null).then(c=>{if(c?.ephemeral)document.querySelector('#testWarning').hidden=false}).catch(()=>{});

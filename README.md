@@ -44,8 +44,12 @@ Run `npm test` for server integration tests. Tests use temporary data. Browser t
 
 MapLibre GL JS is distributed under BSD-3-Clause; its license is available in `node_modules/maplibre-gl/LICENSE.txt` after installation. The supplied web bundle uses OpenFreeMap's style and tiles, with OpenStreetMap and OpenMapTiles attribution shown in the map. Review provider terms and usage policies before production use.
 
-The Git repository stores the Gradle wrapper as base64 text and restores its jar on `npm install`; the same install step generates the MapLibre web assets from the pinned dependency. The GitHub copy now supports PostgreSQL when DATABASE_URL is provided; Render startup refuses to use ephemeral SQLite. Local tests can also use SQLite, while `PGLITE_TEST=1 npm test` checks the PostgreSQL-compatible query path using PGlite. A real Render PostgreSQL deployment has not yet been tested.
+The Git repository stores the Gradle wrapper as base64 text and restores its jar on `npm install`; the same install step generates the MapLibre web assets from the pinned dependency. The GitHub copy now supports PostgreSQL when DATABASE_URL is provided; Render startup refuses to use ephemeral SQLite unless the operator explicitly sets `ALLOW_EPHEMERAL_SQLITE=true`. Local tests can also use SQLite, while `PGLITE_TEST=1 npm test` checks the PostgreSQL-compatible query path using PGlite. A real Render PostgreSQL deployment has not yet been tested.
 
 ## Render test deployment
 
 Set `DATABASE_URL` to a PostgreSQL connection, `JWT_SECRET` to a cryptographically random secret, `HOST=0.0.0.0`, and Node 24; Render supplies `RENDER_EXTERNAL_URL` for the public origin. Free Postgres expires after 30 days and has no backups; free web services spin down on inactivity. Do not use the preview as a production theft-recovery system.
+
+## Ephemeral Render test (explicit opt-in)
+
+For the explicitly requested free, non-production Render test, set `ALLOW_EPHEMERAL_SQLITE=true` and omit `DATABASE_URL`. **All accounts, pairings and last-known locations are lost on every spin-down, restart or deploy.** Free Render web services may spin down after 15 minutes of inactivity. Do not rely on this for actual lost-device recovery. A persistent PostgreSQL service is needed for durable storage, along with the security and availability work described above.

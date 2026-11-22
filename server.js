@@ -17,7 +17,9 @@ if (base.protocol !== 'https:' && !['localhost','127.0.0.1','::1'].includes(base
 const SECRET = process.env.JWT_SECRET;
 if (!SECRET || Buffer.byteLength(SECRET) < 32) throw Error('Set JWT_SECRET to a random secret of at least 32 bytes');
 // DATABASE_URL selects PostgreSQL; SQLite is retained only for local testing.
-if(process.env.RENDER&&!process.env.DATABASE_URL) throw Error('DATABASE_URL is required on Render; ephemeral SQLite is not supported');
+const ephemeral=!!(process.env.RENDER&&!process.env.DATABASE_URL);
+if(ephemeral&&process.env.ALLOW_EPHEMERAL_SQLITE!=='true') throw Error('DATABASE_URL is required unless ALLOW_EPHEMERAL_SQLITE=true is explicitly set');
+if(ephemeral)console.warn('TEST ONLY: Render ephemeral SQLite is erased on restart, spin-down, or redeploy.');
 if(process.env.NODE_ENV==='production'&&process.env.PGLITE_TEST==='1') throw Error('PGLITE_TEST is for local testing only');
 const pgMode=!!process.env.DATABASE_URL||process.env.PGLITE_TEST==='1';
 let db;
@@ -67,6 +69,7 @@ const publicDir=path.join(__dirname,'public');
 const server=http.createServer(async(req,res)=>{for(const [k,v] of Object.entries(headers))res.setHeader(k,v);try{
  const u=new URL(req.url,BASE_URL), pathname=u.pathname;
  if(req.method==='GET'&&!pathname.startsWith('/api/')){const files={'/':'index.html','/device':'device.html','/app.js':'app.js','/device.js':'device.js','/style.css':'style.css','/manifest.webmanifest':'manifest.webmanifest','/sw.js':'sw.js','/icon.svg':'icon.svg','/vendor/maplibre-gl.js':'vendor/maplibre-gl.js','/vendor/maplibre-gl.css':'vendor/maplibre-gl.css'};const f=files[pathname];if(!f)return send(res,404,{error:'Not found'});res.writeHead(200,{'Content-Type':({'html':'text/html; charset=utf-8','js':'text/javascript; charset=utf-8','css':'text/css; charset=utf-8','webmanifest':'application/manifest+json','svg':'image/svg+xml'})[f.split('.').pop()]||'text/plain','Cache-Control':'no-cache'});return fs.createReadStream(path.join(publicDir,f)).pipe(res)}
+ if(req.method==='GET'&&pathname==='/api/config')return send(res,200,{ephemeral});
  if(req.method==='GET'&&pathname==='/api/health'){await stmt('SELECT 1 AS ok');return send(res,200,{ok:true});}
  const ip=req.socket.remoteAddress; if(!limit('global:'+ip,240,60000))return send(res,429,{error:'Too many requests'});
  if(req.method==='POST'&&(pathname==='/api/register'||pathname==='/api/login')){if(!limit('auth:'+ip,12,15*60000))return send(res,429,{error:'Too many attempts. Try later.'});const {email,password}=await body(req);if(typeof email!=='string'||email.length>254||!/^\S+@\S+\.\S+$/.test(email)||typeof password!=='string'||password.length<12||password.length>200)return send(res,400,{error:'Enter a valid email and a password of 12–200 characters.'});const mail=email.toLowerCase().trim();let user=await stmt('SELECT * FROM users WHERE email=?',mail);if(pathname.endsWith('register')){if(user)return send(res,409,{error:'Account already exists.'});const salt=random(16);user={id:id(),email:mail,salt,pass:derive(password,salt)};await run('INSERT INTO users VALUES(?,?,?,?)',user.id,user.email,user.salt,user.pass)}else if(!user||!eq(derive(password,user.salt),user.pass))return send(res,401,{error:'Invalid credentials.'});return send(res,200,{token:issue(user.id),email:user.email})}
