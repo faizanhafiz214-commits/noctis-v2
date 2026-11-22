@@ -12,3 +12,11 @@ public/radar.jpg
 android/app/src/main/assets/
 public/vendor/maplibre-gl.mjs
 public/vendor/maplibre-gl-worker.mjs
+.claude/
+.codex/
+.claude.json
+.codex.json
+.bonto/
+.webslop/
+.mcp.json
+AGENTS.md
