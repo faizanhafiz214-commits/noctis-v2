@@ -7,3 +7,8 @@ android/local.properties
 public/vendor/maplibre-gl.js
 public/vendor/maplibre-gl.css
 android/gradle/wrapper/gradle-wrapper.jar
+
+public/radar.jpg
+android/app/src/main/assets/
+public/vendor/maplibre-gl.mjs
+public/vendor/maplibre-gl-worker.mjs
