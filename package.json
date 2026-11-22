@@ -1,6 +1,6 @@
 {
   "name": "noctis-device-dashboard",
-  "version": "3.0.0-preview",
+  "version": "4.0.0-preview",
   "private": true,
   "description": "Consent-based device recovery dashboard",
   "scripts": {
